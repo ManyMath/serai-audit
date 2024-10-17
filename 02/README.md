@@ -1,149 +1,539 @@
 # `monero-serai` and `monero-wallet` audit outline
-This document represents my ([sneurlax](https://github.com/sneurlax)'s) personal outline for contributing to the audit(s) of `monero-serai` and `monero-wallet` as a contractor for [Cypher Stack](https://cypherstack.com).  It will be adapted into a report turned into Cypher Stack which will in turn be compiled into a combined audit report for final delivery.
+This document represents my ([sneurlax](https://github.com/sneurlax)'s) personal outline for contributing to the audit(s) of `monero-serai` and `monero-wallet` for [Cypher Stack](https://cypherstack.com).
+
+## About
+According to a quick Python script made to analyze the codebase,
+
+- `monero-serai` has:
+  - 10282 lines of code.
+  - 2407 lines of comments.
+
+- `monero-wallet` has:
+  - 4476 lines of code.
+  - 982 lines of comments.
+
+So I estimate that about 63 hours will be required just for an in-depth read-through of `monero-serai`, with a further 140 hours for annotation, consultations with the author, and final report writeup.  I estimate that about 28 hours will be required for an in-depth read-through of `monero-wallet`, with a further 62 hours for annotation, consultations with the author, and final report writeup.
+
+I've already done a quick initial read-through in order to determine a reasonable separation of responsibilities, which took about 22 hours or almost 3 work-days.  In this context, estimating a more in-depth read-through to take about 2 weeks seems reasonable.  Codebase annotation, consultations with the author, and final report writeup has been estimated to take 25-28 days combined for both crates.  Assuming a 5-day workweek, this equates to about 6 calendar weeks of time from beginning to end, which only aligns with the client's expectations by coincidence.
 
 ## 0. Separation of responsibilities
-Indicate which files require the review of a senior mathematician/cryptographer.
+About 40-50% of the codebase involves math & cryptography which will require review by a senior mathematician/cryptographer.
 
-After indicating which files I'd request that a senior review more thoroughly, I will proceed to nonetheless make a best-effort assessment of the safety and security of those portions regardless, but will not invest extraneous time into validating concepts for which I am uncredentialed.
-- [ ] List which files or portions therein will require review by a senior mathematician/cryptographer.
-  I'm not comfortable auditing most aspects of mathematical/cryptographic proofs/protocols  because I an uncredentialed.  For these portions of the codebase, I will defer to and assist a more senior mathematician/cryptographer.
-  - [x] Make "checkbox-tree" diagram of crates in Markdown format.
-    See below.
-  - [ ] Annotate checkbox-trees with checkboxes to indicate required review as appropriate.
-  - [ ] Remove any files which don't need review (eg. most if not all of the `mod.rs`s)
-  - [ ] Remove these annotations for delivery to Cypher Stack.
+### Legend
+- [x] -> Needs senior review.
+- [ ] -> Needs partial senior review.
 
-### Senior needed for these `monero-serai` files:
+Files which require little to no senior review are omitted for brevity.
+
+### Senior needed for these `monero-serai` files & aspects thereof:
 - [ ] monero
   - [ ] ringct
     - [ ] bulletproofs
       - [ ] plus
-        - [ ] mod.rs
         - [ ] aggregate_range_proof.rs
+          - [x] EdwardsPoint
+          - [x] Scalar
+          - [x] mul_by_cofactor
+          - [x] INV_EIGHT
+          - [x] transcript_A
+          - [x] multiexp
+          - [x] multiexp_vartime
+          - [x] prove
+          - [x] verify
         - [ ] transcript.rs
+          - [x] hash_to_point
+          - [x] keccak256_to_scalar
+          - [x] initial_transcript
+          - [x] keccak256
+          - [x] keccak256_to_scalar
+          - [x] hash_to_point
         - [ ] weighted_inner_product.rs
+          - [x] next_G_H
+          - [x] prove
+          - [x] verify
+          - [x] WipStatement
+          - [x] WipWitness
+          - [x] WipProof
+          - [x] transcript_L_R
+          - [x] transcript_A_B
+          - [x] multiexp
+          - [x] multiexp_vartime
+          - [x] challenge_products
+          - [x] prove
+          - [x] verify
+          - [x] verifier_weight
+          - [x] verifier.other.push()
       - [ ] scalar_vector.rs
+        - [x] Mul<&[EdwardsPoint]> for &ScalarVector
+        - [x] inner_product
+        - [x] weighted_inner_product)
       - [ ] point_vector.rs
+        - [x] mul_vec
+        - [x] multiexp
+        - [x] curve25519_dalek::edwards::EdwardsPoint
       - [ ] lib.rs
+        - [x] prove
+        - [x] prove_plus
+        - [x] verify
+        - [x] batch_verify
+        - [x] OriginalProof
+        - [x] PlusProof
+        - [x] EdwardsPoint
+        - [x] Commitment
+        - [x] Original BP variant
+        - [x] Plus BP variant
+        - [x] calculate_bp_clawback
       - [ ] batch_verifier.rs
+        - [x] vartime_multiscalar_mul
+        - [x] verify
+        - [x] ED25519_BASEPOINT_POINT
+        - [x] MONERO_H
+        - [x] original::GENERATORS
+        - [x] plus::GENERATORS
       - [ ] core.rs
+        - [x] multiexp
+        - [x] multiexp_vartime
+        - [x] vartime_multiscalar_mul
+        - [x] challenge_products
       - [ ] original
-        - [ ] mod.rs
         - [ ] inner_product.rs
+          - [x] prove
+          - [x] verify
+          - [x] multiexp_vartime
+          - [x] transcript_L_R
+          - [x] keccak256_to_scalar
+          - [x] verifier.0.g_bold
+          - [x] verifier.0.h_bold
+          - [x] generators.G
+          - [x] generators.H
+          - [x] IpStatement::prove
+          - [x] cl
+          - [x] cr
       - [ ] tests
         - [ ] plus
-          - [ ] mod.rs
           - [ ] aggregate_range_proof.rs
+            - [x] AggregateRangeStatement
+            - [x] AggregateRangeWitness
+            - [x] BulletproofsPlusBatchVerifier
           - [ ] weighted_inner_product.rs
-        - [ ] mod.rs
+            - [x] BulletproofsPlusBatchVerifier
+            - [x] test_weighted_inner_product
         - [ ] original
-          - [ ] mod.rs
           - [ ] inner_product.rs
+            - [x] IpProof
+            - [x] IpStatement
+            - [x] IpWitness
+            - [x] statement.prove
+            - [x] statement.verify
+            - [x] H
+            - [x] P = sum(g_bold * a, h_bold * b, g * (a * b))
+            - [x] test_zero_inner_product
     - [ ] borromean
       - [ ] lib.rs
+        - [x] BorromeanSignatures::verify
+        - [x] BorromeanRange::verify
     - [ ] clsag
       - [ ] lib.rs
+        - [x] ClsagContext::new
+        - [x] core
+        - [x] Clsag::sign_core
+        - [x] Clsag::sign
+        - [x] Clsag::verify
       - [ ] tests.rs
+        - [x] clsag
+        - [x] clsag_multisig
       - [ ] multisig.rs
+        - [x] ClsagMultisig::preprocess_addendum
+        - [x] ClsagMultisig::process_addendum
+        - [x] ClsagMultisig::sign_share
+        - [x] ClsagMultisig::verify
+        - [x] ClsagMultisig::verify_share
     - [ ] mlsag
-      - [ ] src
-        - [ ] lib.rs
+      - [ ] lib.rs
+        - [x] Mlsag::verify
+        - [x] AggregateRingMatrixBuilder::push_ring
+        - [x] AggregateRingMatrixBuilder::build
   - [ ] verify-chain
     - [ ] main.rs
+      - [x] check_block
+      - [x] clsag::verify
   - [ ] generators
     - [ ] lib.rs
-    - [ ] tests
-      - [ ] mod.rs
-      - [ ] tests.txt
+      - [x] bulletproofs_generators
     - [ ] hash_to_point.rs
+     - [x] hash_to_point
   - [ ] io
     - [ ] lib.rs
+      - [x] decompress_point
+      - [x] read_point
+      - [x] read_torsion_free_point
   - [ ] wallet
     - [ ] address
       - [ ] lib.rs
+        - [x] Address::from_str_with_unchecked_network
+        - [x] Address::from_str
+        - [x] AddressType::is_guaranteed
+        - [x] AddressBytes::new
+        - [x] NetworkedAddressBytes::new
       - [ ] tests.rs
-      - [ ] base58check.rs
+        - [x] featured
+        - [x] featured_vectors
     - [ ] tests
-      - [ ] wallet2_compatibility.rs
       - [ ] runner
         - [ ] mod.rs
+          - [x] runner::ring_len
+          - [x] runner::random_address
+          - [x] runner::random_guaranteed_address
       - [ ] add_data.rs
+        - [ ] add_single_data_more_than_max
       - [ ] send.rs
+        - [x] add_inputs
+        - [x] single_r_subaddress_send
+        - [x] spend_one_input_to_two_outputs_no_change
       - [ ] scan.rs
+        - [x] scan_guaranteed
+        - [x] scan_guaranteed_subaddress
+        - [x] scan_guaranteed_integrated
+        - [x] scan_guaranteed_integrated_subaddress
       - [ ] decoys.rs
+        - [x] select_latest_output_as_decoy_canonical
+        - [x] select_latest_output_as_decoy
+    - [x] select_latest_output_as_decoy_canonical
+    - [x] select_latest_output_as_decoy
       - [ ] eventuality.rs
+        - [x] eventuality::builder.add_payment (for handling different address types and their implications)
+        - [x] eventuality::Eventuality::matches (for cryptographic validation and mutation checking)
     - [ ] lib.rs
+      - [x] SharedKeyDerivations::uniqueness (for input uniqueness calculation using cryptographic hash)
+      - [x] SharedKeyDerivations::output_derivations (for deriving shared keys and view tags securely)
+      - [x] SharedKeyDerivations::payment_id_xor (for deriving a masked payment ID using elliptic curve operations)
+      - [x] SharedKeyDerivations::commitment_mask (for creating the mask for the commitment using cryptographic scalar conversion)
+      - [x] SharedKeyDerivations::compact_amount_encryption (for encrypting amounts compactly and securely)
+      - [x] SharedKeyDerivations::decrypt (for decrypting and verifying encrypted amounts)
     - [ ] scan.rs
+      - [x] InternalScanner::scan_transaction (complex key derivation and cryptographic operations for transaction scanning)
+      - [x] SharedKeyDerivations::output_derivations (used indirectly in scan_transaction, involving shared key derivations)
+      - [x] SharedKeyDerivations::decrypt (used indirectly in scan_transaction for decrypting amounts)
     - [ ] extra.rs
+      - [x] PaymentId::bitxor (handles encryption via XOR, needs verification of correctness)
+      - [x] PaymentId::read (parses and identifies payment ID types, including cryptographic data)
+      - [x] ExtraField::write (serializes different fields, some of which involve cryptographic elements like public keys)
+      - [x] Extra::keys (parses public keys from the extra field, which are crucial in Monero's output verification)
+      - [x] Extra::payment_id (retrieves payment IDs, a critical privacy component in Monero)
     - [ ] view_pair.rs
+      - [x] ViewPair::new (validates spend key torsion)
+      - [x] ViewPair::subaddress_derivation (derives subaddress scalar using keccak256 and scalar computations)
+      - [x] ViewPair::subaddress_keys (derives keys for subaddresses, critical for Monero address derivation)
+      - [x] GuaranteedViewPair::new (validates spend key torsion and guarantees compatibility with burning bug mitigation)
+      - [x] GuaranteedViewPair::address (generates Monero addresses, including handling of guaranteed flags, subaddresses, and payment IDs)
     - [ ] decoys.rs
+      - [x] select_n (selects decoys using distribution and manages cryptographic randomness)
+      - [x] select_decoys (forms a complete ring and converts positional indexes to offset indexes)
+      - [x] OutputWithDecoys::new (selects decoys using cryptographic random functions)
+      - [x] OutputWithDecoys::fingerprintable_deterministic_new (deterministically selects decoys for multisignature contexts)
     - [ ] send
-      - [ ] mod.rs
       - [ ] tx_keys.rs
+        - [x] seeded_rng (random number generation for key derivation)
+        - [x] TransactionKeys::new (constructs transaction keys based on randomness)
+        - [x] SignableTransaction::transaction_keys (key derivation and randomness management)
+        - [x] SignableTransaction::ecdhs (ECDH key exchange for outputs)
+        - [x] SignableTransaction::shared_key_derivations (shared key and derivation setup)
+        - [x] SignableTransaction::payment_id_xors (XOR calculation for payment IDs based on shared keys)
+        - [x] SignableTransaction::transaction_keys_pub (public key derivation for transactions)
+        - [x] SignableTransaction::commitments_and_encrypted_amounts (commitment and encryption of amounts)
+        - [x] SignableTransaction::sum_output_masks (summation of output masks for commitments)
       - [ ] tx.rs
       - [ ] multisig.rs
+        - [x] TransactionMachine::multisig (setup for multisig transaction using FROST)
+        - [x] PreprocessMachine::preprocess (randomness and preprocessing setup for multisig)
+        - [x] SignMachine::sign (signing process for FROST multisig transactions)
+        - [x] SignableTransaction::with_key_images (handling and sorting key images)
+        - [x] TransactionSignMachine::sign (key image and commitment handling)
+        - [x] SignatureMachine::complete (finalizing and completing signatures for transaction)
       - [ ] eventuality.rs
+        - [x] Eventuality::matches (verification and matching of a transaction to its expected state, including cryptographic commitments and outputs)
+        - [x] Eventuality::extra (ensures the cryptographic binding of extras to inputs)
+        - [x] Eventuality::commitments_and_encrypted_amounts (verification of cryptographic components like commitments and encrypted amounts in relation to expected inputs)
     - [ ] tests
-      - [ ] mod.rs
       - [ ] scan.rs
+        - [x] scan_long_encrypted_amount
       - [ ] extra.rs
+        - [x] empty_extra
+        - [x] padding_only_size_1
+        - [x] padding_only_size_2
+        - [x] padding_only_max_size
+        - [x] padding_only_exceed_max_size
+        - [x] invalid_padding_only
+        - [x] pub_key_only
+        - [x] extra_nonce_only
+        - [x] extra_nonce_only_wrong_size
+        - [x] pub_key_and_padding
+        - [x] pub_key_and_invalid_padding
+        - [x] extra_mysterious_minergate_only
+        - [x] extra_mysterious_minergate_only_large
+        - [x] extra_mysterious_minergate_only_wrong_size
+        - [x] extra_mysterious_minergate_and_pub_key
     - [ ] output.rs
+      - [x] AbsoluteId::write
+      - [x] AbsoluteId::read
+      - [x] RelativeId::write
+      - [x] RelativeId::read
+      - [x] OutputData::key
+      - [x] OutputData::key_offset
+      - [x] OutputData::commitment
+      - [x] OutputData::write
+      - [x] OutputData::read
+      - [x] Metadata::write
+      - [x] Metadata::read
   - [ ] rpc
     - [ ] simple-request
-      - [ ] tests
-        - [ ] tests.rs
       - [ ] lib.rs
+        - [x] SimpleRequestRpc::digest_auth_challenge
+        - [x] SimpleRequestRpc::new
+        - [x] SimpleRequestRpc::with_custom_timeout
+        - [x] SimpleRequestRpc::inner_post
+        - [x] Rpc::post
     - [ ] lib.rs
-  - [ ] tests
-    - [ ] tests.rs
+      - [x] FeeRate::calculate_fee_from_weight
+      - [x] FeeRate::calculate_weight_from_fee
+      - [x] Rpc::get_transactions
+      - [x] Rpc::get_pruned_transactions
+      - [x] Rpc::get_block
+      - [x] Rpc::get_block_by_number
+      - [x] Rpc::get_scannable_block
+      - [x] Rpc::get_fee_rate
+      - [x] Rpc::get_o_indexes
+      - [x] DecoyRpc::get_outs
+      - [x] DecoyRpc::get_unlocked_outputs
   - [ ] primitives
     - [ ] unreduced_scalar.rs
+      - [x] UnreducedScalar::as_bits
+      - [x] UnreducedScalar::non_adjacent_form
+      - [x] UnreducedScalar::recover_monero_slide_scalar
     - [ ] lib.rs
+      - [x] Commitment::calculate
+      - [x] Decoys::new
+      - [x] Decoys::read
+      - [x] keccak256_to_scalar
     - [ ] tests.rs
+      - [x] recover_scalars::test_recover
   - [ ] transaction.rs
+    - [x] Input::read
+    - [x] Input::write
+    - [x] Output::read
+    - [x] Output::write
+    - [x] Timelock::read
+    - [x] Timelock::write
+    - [x] TransactionPrefix::write
+    - [x] TransactionPrefix::read
+    - [x] TransactionPrefix::hash
+    - [x] Transaction::write
+    - [x] Transaction::read
+    - [x] Transaction::hash_with_prunable_hash
+    - [x] Transaction<NotPruned>::hash
+    - [x] Transaction<NotPruned>::signature_hash
+    - [x] Transaction<NotPruned>::weight
   - [ ] ring_signatures.rs
+    - [x] Signature::read
+    - [x] Signature::write
+    - [x] RingSignature::read
+    - [x] RingSignature::write
+    - [x] RingSignature::verify
   - [ ] merkle.rs
+    - [x] merkle_root
   - [ ] lib.rs
+    - [x] merkle
+    - [x] ring_signatures
+    - [x] ringct
+    - [x] transaction
+    - [x] block
   - [ ] block.rs
+    - [x] Block::serialize_pow_hash
+    - [x] Block::hash
   - [ ] ringct.rs
+    - [x] EncryptedAmount::read
+    - [x] EncryptedAmount::write
+    - [x] RctBase::write
+    - [x] RctBase::read
+    - [x] RctPrunable::write
+    - [x] RctPrunable::read
+    - [x] RctProofs::write
+    - [x] RctProofs::read
+    - [x] RctProofs::serialize
+    - [x] RctProofs::rct_type
   - [ ] tests
     - [ ] transaction.rs
+      - [x] Transaction::read
+      - [x] Transaction::write
+      - [x] Transaction::signature_hash
+      - [x] Transaction::hash
+      - [x] Clsag::verify
     - [ ] mod.rs
+      - [x] transaction::Transaction::read
+      - [x] transaction::Transaction::write
+      - [x] transaction::Transaction::signature_hash
+      - [x] transaction::Transaction::hash
+      - [x] transaction::Clsag::verify
 
-## Senior needed for these `monero-wallet` files:
+## Senior needed for these `monero-wallet` files & aspects thereof:
 - [ ] wallet
   - [ ] address
     - [ ] lib.rs
+      - [x] AddressType::is_subaddress
+      - [x] AddressType::payment_id
+      - [x] AddressType::is_guaranteed
+      - [x] SubaddressIndex::new
+      - [x] AddressBytes::new
+      - [x] NetworkedAddressBytes::new
+      - [x] Address::new
+      - [x] Address::from_str_with_unchecked_network
+      - [x] Address::from_str
+      - [x] Address::fmt
+      - [x] Address::Display
     - [ ] tests.rs
-    - [ ] base58check.rs
+      - [x] test_encoded_len_for_bytes
+      - [x] base58check
+      - [x] standard_address
+      - [x] integrated_address
+      - [x] subaddress
+      - [x] featured
+      - [x] featured_vectors
+    - [x] base58check.rs
   - [ ] tests
-    - [ ] wallet2_compatibility.rs
-    - [ ] runner
-      - [ ] mod.rs
+    - [x] wallet2_compatibility.rs
+    - [x] runner
+      - [x] mod.rs
     - [ ] add_data.rs
+      - [x] add_single_data_less_than_max
+      - [x] add_multiple_data_less_than_max
+      - [x] add_single_data_more_than_max
     - [ ] send.rs
+      - [x] add_inputs
+      - [x] spend_miner_output
+      - [x] spend_multiple_outputs
+      - [x] single_r_subaddress_send
+      - [x] spend_one_input_to_one_output_plus_change
+      - [x] spend_max_outputs
+      - [x] spend_max_outputs_to_subaddresses
+      - [x] spend_one_input_to_two_outputs_no_change
+      - [x] subaddress_change
     - [ ] scan.rs
+      - [x] scan_standard_address
+      - [x] scan_subaddress
+      - [x] scan_integrated_address
+      - [x] scan_guaranteed
+      - [x] scan_guaranteed_subaddress
+      - [x] scan_guaranteed_integrated
+      - [x] scan_guaranteed_integrated_subaddress
     - [ ] decoys.rs
+      - [x] select_latest_output_as_decoy_canonical
+      - [x] select_latest_output_as_decoy
     - [ ] eventuality.rs
+      - [x] eventuality (esp. proofs.base.commitments)
   - [ ] lib.rs
+    - [x] SharedKeyDerivations::uniqueness
+    - [x] SharedKeyDerivations::output_derivations
+    - [x] SharedKeyDerivations::payment_id_xor
+    - [x] SharedKeyDerivations::commitment_mask
+    - [x] SharedKeyDerivations::compact_amount_encryption
+    - [x] SharedKeyDerivations::decrypt
   - [ ] scan.rs
+    - [x] InternalScanner::scan_transaction
+    - [x] InternalScanner::scan
+    - [x] SharedKeyDerivations::output_derivations (called within InternalScanner::scan_transaction)
+    - [x] SharedKeyDerivations::payment_id_xor (called within InternalScanner::scan_transaction)
+    - [x] SharedKeyDerivations::decrypt (called within InternalScanner::scan_transaction)
   - [ ] extra.rs
+    - [x] PaymentId::read
+    - [x] ExtraField::read
+    - [x] Extra::keys
+    - [x] Extra::payment_id
+    - [x] Extra::read
   - [ ] view_pair.rs
+    - [x] ViewPair::new
+    - [x] ViewPair::subaddress_derivation
+    - [x] ViewPair::subaddress_keys
+    - [x] GuaranteedViewPair::new
   - [ ] decoys.rs
+    - [x] select_n
+    - [x] select_decoys
+    - [x] OutputWithDecoys::new
+    - [x] OutputWithDecoys::fingerprintable_deterministic_new
   - [ ] send
-    - [ ] mod.rs
     - [ ] tx_keys.rs
+      - [x] select_n
+      - [x] select_decoys
+      - [x] SignableTransaction::validate
+      - [x] SignableTransaction::new
+      - [x] SignableTransaction::sign
+      - [x] SignableTransactionWithKeyImages::with_key_images
+      - [x] SignableTransaction::necessary_fee
+      - [x] SignableTransaction::read
     - [ ] tx.rs
+      - [x] SignableTransaction::inputs
+      - [x] SignableTransaction::outputs
+      - [x] SignableTransaction::extra
+      - [x] SignableTransaction::weight_and_necessary_fee
+      - [x] SignableTransactionWithKeyImages::transaction_without_signatures
     - [ ] multisig.rs
+      - [x] SignableTransaction::multisig
+      - [x] PreprocessMachine::preprocess
+      - [x] SignMachine::sign
+      - [x] SignMachine::cache
+      - [x] SignMachine::from_cache
+      - [x] SignMachine::read_preprocess
+      - [x] SignatureMachine::read_share
+      - [x] SignatureMachine::complete
     - [ ] eventuality.rs
+      - [x] Eventuality::matches
+      - [x] Eventuality::extra
   - [ ] tests
-    - [ ] mod.rs
     - [ ] scan.rs
+      - [x] scan_long_encrypted_amount
     - [ ] extra.rs
+      - [x] empty_extra
+      - [x] padding_only_size_1
+      - [x] padding_only_size_2
+      - [x] padding_only_max_size
+      - [x] padding_only_exceed_max_size
+      - [x] invalid_padding_only
+      - [x] pub_key_only
+      - [x] extra_nonce_only
+      - [x] extra_nonce_only_wrong_size
+      - [x] pub_key_and_padding
+      - [x] pub_key_and_invalid_padding
+      - [x] extra_mysterious_minergate_only
+      - [x] extra_mysterious_minergate_only_large
+      - [x] extra_mysterious_minergate_only_wrong_size
+      - [x] extra_mysterious_minergate_and_pub_key
   - [ ] output.rs
+    - [x] AbsoluteId::write
+    - [x] AbsoluteId::read
+    - [x] RelativeId::write
+    - [x] RelativeId::read
+    - [x] OutputData::key
+    - [x] OutputData::key_offset
+    - [x] OutputData::commitment
+    - [x] OutputData::write
+    - [x] OutputData::read
+    - [x] Metadata::write
+    - [x] Metadata::read
+    - [x] WalletOutput::transaction
+    - [x] WalletOutput::index_in_transaction
+    - [x] WalletOutput::index_on_blockchain
+    - [x] WalletOutput::key
+    - [x] WalletOutput::key_offset
+    - [x] WalletOutput::commitment
+    - [x] WalletOutput::additional_timelock
+    - [x] WalletOutput::subaddress
+    - [x] WalletOutput::payment_id
+    - [x] WalletOutput::arbitrary_data
+    - [x] WalletOutput::write
+    - [x] WalletOutput::serialize
+    - [x] WalletOutput::read
 
 ## 1. Workspace setup
-- [ ] Go through the general workspace structure in `Cargo.toml`.
+- [x] Go through the general workspace structure in `Cargo.toml`.
 - [ ] Check that all patches and dependencies line up with project needs.
   - [ ] Version patches (e.g., `parking_lot_core`, `rocksdb`, etc.)
   - [ ] Standard library patches (`matches`, `is-terminal`)
