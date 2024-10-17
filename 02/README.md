@@ -23,7 +23,7 @@ About 40-50% of the codebase involves math & cryptography which will require rev
 - [x] -> Needs senior review.
 - [ ] -> Needs partial senior review.
 
-Files which require little to no senior review are omitted for brevity.
+Files/code which require little to no senior review are omitted for brevity.
 
 ### Senior needed for these `monero-serai` files & aspects thereof:
 - [ ] monero
